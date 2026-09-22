@@ -11,6 +11,23 @@
         <el-tab-pane label="个人信息" name="profile">
           <el-card shadow="never">
             <el-form :model="profileForm" label-width="100px">
+              <el-form-item label="头像">
+                <div class="avatar-upload">
+                  <el-avatar :size="80" :src="profileForm.avatar" :icon="UserFilled" />
+                  <div class="avatar-actions">
+                    <el-upload
+                      :show-file-list="false"
+                      :before-upload="beforeAvatarUpload"
+                      :http-request="handleAvatarUpload"
+                      accept="image/*"
+                    >
+                      <el-button type="primary" size="small" :icon="Upload">上传头像</el-button>
+                    </el-upload>
+                    <el-button size="small" @click="handleSelectAvatar">选择预设</el-button>
+                    <el-button v-if="profileForm.avatar" size="small" @click="handleRemoveAvatar">移除头像</el-button>
+                  </div>
+                </div>
+              </el-form-item>
               <el-form-item label="用户名">
                 <el-input v-model="profileForm.username" disabled />
               </el-form-item>
@@ -164,7 +181,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowLeft, ChatDotSquare } from '@element-plus/icons-vue'
+import { ArrowLeft, ChatDotSquare, UserFilled, Upload } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTheme } from '@/composables/useTheme'
 
@@ -176,7 +193,20 @@ const activeTab = ref('profile')
 
 const profileForm = ref({
   username: '',
+  avatar: '',
 })
+
+// 预设头像列表
+const presetAvatars = [
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Max',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka',
+]
 
 const modelForm = ref({
   temperature: 0.7,
@@ -235,6 +265,7 @@ const saveUISettings = () => {
 // 加载设置
 const loadSettings = () => {
   profileForm.value.username = userStore.user?.username || ''
+  profileForm.value.avatar = userStore.user?.avatar || ''
 
   const savedModelSettings = localStorage.getItem('modelSettings')
   if (savedModelSettings) {
@@ -250,6 +281,98 @@ const loadSettings = () => {
       fontSize: fontSize.value
     }
   }
+}
+
+// 头像上传前检查
+const beforeAvatarUpload = (file: File) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
+// 处理头像上传
+const handleAvatarUpload = (options: any) => {
+  const file = options.file
+  const reader = new FileReader()
+
+  reader.onload = (e) => {
+    const avatarUrl = e.target?.result as string
+    profileForm.value.avatar = avatarUrl
+    userStore.setAvatar(avatarUrl)
+    ElMessage.success('头像已更新')
+  }
+
+  reader.readAsDataURL(file)
+}
+
+// 选择预设头像
+const handleSelectAvatar = async () => {
+  try {
+    const { value } = await ElMessageBox({
+      title: '选择预设头像',
+      message: () => {
+        const container = document.createElement('div')
+        container.style.display = 'grid'
+        container.style.gridTemplateColumns = 'repeat(4, 1fr)'
+        container.style.gap = '16px'
+        container.style.padding = '20px'
+
+        presetAvatars.forEach(url => {
+          const img = document.createElement('img')
+          img.src = url
+          img.style.width = '80px'
+          img.style.height = '80px'
+          img.style.borderRadius = '50%'
+          img.style.cursor = 'pointer'
+          img.style.border = '2px solid transparent'
+          img.style.transition = 'all 0.3s'
+
+          img.addEventListener('mouseenter', () => {
+            img.style.border = '2px solid #409eff'
+            img.style.transform = 'scale(1.1)'
+          })
+
+          img.addEventListener('mouseleave', () => {
+            img.style.border = '2px solid transparent'
+            img.style.transform = 'scale(1)'
+          })
+
+          img.addEventListener('click', () => {
+            profileForm.value.avatar = url
+            userStore.setAvatar(url)
+            ElMessage.success('头像已更新')
+            const closeBtn = document.querySelector('.el-message-box__close') as HTMLElement
+            closeBtn?.click()
+          })
+
+          container.appendChild(img)
+        })
+
+        return container
+      },
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonText: '关闭'
+    })
+  } catch (error) {
+    // 用户取消
+  }
+}
+
+// 移除头像
+const handleRemoveAvatar = () => {
+  profileForm.value.avatar = ''
+  userStore.setAvatar('')
+  ElMessage.success('头像已移除')
 }
 
 onMounted(() => {
@@ -343,5 +466,17 @@ onMounted(() => {
 
 .feature-list li {
   list-style-type: disc;
+}
+
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>

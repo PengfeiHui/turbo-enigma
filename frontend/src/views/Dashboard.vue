@@ -5,7 +5,7 @@
       <div class="user-section">
         <el-dropdown @command="handleCommand">
           <div class="user-info">
-            <el-avatar :size="32" :icon="UserFilled" />
+            <el-avatar :size="32" :src="userStore.user?.avatar" :icon="UserFilled" />
             <span>{{ userStore.user?.username }}</span>
             <el-icon><ArrowDown /></el-icon>
           </div>

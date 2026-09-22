@@ -140,9 +140,9 @@
             :class="msg.role"
           >
             <div class="message-avatar">
-              <el-avatar v-if="msg.role === 'user'" :icon="UserFilled" />
-              <el-avatar v-else>
-                <el-icon><Cpu /></el-icon>
+              <el-avatar v-if="msg.role === 'user'" :size="36" :src="userStore.user?.avatar" :icon="UserFilled" />
+              <el-avatar v-else :size="36" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <el-icon :size="20"><Cpu /></el-icon>
               </el-avatar>
             </div>
             <div class="message-bubble">

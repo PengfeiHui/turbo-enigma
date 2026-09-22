@@ -6,6 +6,7 @@ export interface User {
   username: string
   role: string
   created_at: string
+  avatar?: string
 }
 
 export const useUserStore = defineStore('user', () => {
