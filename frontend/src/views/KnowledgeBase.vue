@@ -116,7 +116,7 @@ const currentUploadFile = ref('')
 
 // 返回
 const goBack = () => {
-  router.push('/chat')
+  router.push('/dashboard')
 }
 
 // 格式化日期

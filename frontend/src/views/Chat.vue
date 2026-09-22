@@ -3,6 +3,9 @@
     <!-- 左侧会话列表 -->
     <div class="sidebar">
       <div class="sidebar-header">
+        <el-button @click="router.push('/dashboard')" :icon="HomeFilled" style="width: 100%; margin-bottom: 12px">
+          返回首页
+        </el-button>
         <el-button type="primary" @click="handleNewConversation" :icon="Plus" style="width: 100%">
           新建会话
         </el-button>
@@ -112,7 +115,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Delete, User, Document, SwitchButton } from '@element-plus/icons-vue'
+import { Plus, Delete, User, Document, SwitchButton, HomeFilled } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'

@@ -105,7 +105,7 @@ const handleLogin = async () => {
       userStore.setUser(res.user)
 
       ElMessage.success('登录成功')
-      router.push('/chat')
+      router.push('/dashboard')
     } catch (error) {
       console.error('Login failed:', error)
     } finally {
