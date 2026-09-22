@@ -28,7 +28,21 @@ export const useUserStore = defineStore('user', () => {
 
   const setUser = (newUser: User) => {
     user.value = newUser
+
+    // 如果没有头像，从 localStorage 加载
+    if (!user.value.avatar) {
+      user.value.avatar = localStorage.getItem('userAvatar') || ''
+    }
+
     localStorage.setItem('user', JSON.stringify(newUser))
+  }
+
+  const setAvatar = (avatarUrl: string) => {
+    if (user.value) {
+      user.value.avatar = avatarUrl
+      localStorage.setItem('userAvatar', avatarUrl)
+      localStorage.setItem('user', JSON.stringify(user.value))
+    }
   }
 
   const logout = () => {
@@ -47,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
     user,
     setToken,
     setUser,
+    setAvatar,
     logout,
     isAdmin
   }
