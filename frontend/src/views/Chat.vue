@@ -27,18 +27,27 @@
       </div>
 
       <div class="sidebar-footer">
-        <el-dropdown @command="handleCommand">
+        <el-dropdown @command="handleCommand" trigger="click">
           <div class="user-info">
-            <el-icon><User /></el-icon>
+            <el-avatar :size="36" :src="userStore.user?.avatar" :icon="UserFilled" />
             <span>{{ userStore.user?.username }}</span>
+            <el-icon><ArrowDown /></el-icon>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-if="userStore.isAdmin()" command="kb">
+              <el-dropdown-item command="avatar">
+                <el-icon><UserFilled /></el-icon>
+                更换头像
+              </el-dropdown-item>
+              <el-dropdown-item command="settings">
+                <el-icon><Setting /></el-icon>
+                个人中心
+              </el-dropdown-item>
+              <el-dropdown-item v-if="userStore.isAdmin()" command="kb" divided>
                 <el-icon><Document /></el-icon>
                 知识库管理
               </el-dropdown-item>
-              <el-dropdown-item command="logout">
+              <el-dropdown-item command="logout" divided>
                 <el-icon><SwitchButton /></el-icon>
                 退出登录
               </el-dropdown-item>
@@ -242,6 +251,68 @@
         </div>
       </template>
     </div>
+
+    <!-- 更换头像对话框 -->
+    <el-dialog
+      v-model="avatarDialogVisible"
+      title="更换头像"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <div class="avatar-dialog-content">
+        <div class="current-avatar">
+          <el-avatar :size="100" :src="userStore.user?.avatar" :icon="UserFilled" />
+          <p>当前头像</p>
+        </div>
+
+        <el-divider />
+
+        <div class="upload-section">
+          <h4>上传自定义头像</h4>
+          <el-upload
+            ref="uploadRef"
+            :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
+            :http-request="handleAvatarUpload"
+            accept="image/*"
+            drag
+          >
+            <el-icon class="el-icon--upload"><Upload /></el-icon>
+            <div class="el-upload__text">
+              将图片拖到此处，或<em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                支持 JPG、PNG 格式，文件大小不超过 2MB
+              </div>
+            </template>
+          </el-upload>
+        </div>
+
+        <el-divider />
+
+        <div class="preset-section">
+          <h4>选择预设头像</h4>
+          <div class="preset-avatars">
+            <div
+              v-for="(avatar, index) in presetAvatars"
+              :key="index"
+              class="preset-avatar-item"
+              @click="handleSelectPresetAvatar(avatar)"
+            >
+              <el-avatar :size="64" :src="avatar" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button @click="avatarDialogVisible = false">取消</el-button>
+        <el-button type="danger" plain @click="handleRemoveAvatar" v-if="userStore.user?.avatar">
+          移除头像
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -249,7 +320,7 @@
 import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Delete, User, Document, SwitchButton, HomeFilled, ChatDotSquare, DocumentCopy, Connection, Lightning, Collection, ChatLineRound, Download, ChatDotRound, UserFilled, Cpu, CopyDocument, RefreshRight, Loading, Tickets, Promotion } from '@element-plus/icons-vue'
+import { Plus, Delete, User, Document, SwitchButton, HomeFilled, ChatDotSquare, DocumentCopy, Connection, Lightning, Collection, ChatLineRound, Download, ChatDotRound, UserFilled, Cpu, CopyDocument, RefreshRight, Loading, Tickets, Promotion, Setting, ArrowDown, Upload, Picture } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
@@ -437,7 +508,76 @@ const handleCommand = (command: string) => {
     ElMessage.success('已退出登录')
   } else if (command === 'kb') {
     router.push('/kb-manage')
+  } else if (command === 'settings') {
+    router.push('/settings')
+  } else if (command === 'avatar') {
+    showAvatarDialog()
   }
+}
+
+// 预设头像列表
+const presetAvatars = [
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Max',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka',
+]
+
+const avatarDialogVisible = ref(false)
+const uploadRef = ref()
+
+// 显示头像对话框
+const showAvatarDialog = () => {
+  avatarDialogVisible.value = true
+}
+
+// 头像上传前检查
+const beforeAvatarUpload = (file: File) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
+// 处理头像上传
+const handleAvatarUpload = (options: any) => {
+  const file = options.file
+  const reader = new FileReader()
+
+  reader.onload = (e) => {
+    const avatarUrl = e.target?.result as string
+    userStore.setAvatar(avatarUrl)
+    ElMessage.success('头像已更新')
+    avatarDialogVisible.value = false
+  }
+
+  reader.readAsDataURL(file)
+}
+
+// 选择预设头像
+const handleSelectPresetAvatar = (url: string) => {
+  userStore.setAvatar(url)
+  ElMessage.success('头像已更新')
+  avatarDialogVisible.value = false
+}
+
+// 移除头像
+const handleRemoveAvatar = () => {
+  userStore.setAvatar('')
+  ElMessage.success('头像已移除')
+  avatarDialogVisible.value = false
 }
 
 // 监听消息变化，自动滚动
@@ -672,6 +812,59 @@ onMounted(() => {
 
 .user-info:hover {
   background: #f5f5f5;
+}
+
+/* 头像对话框 */
+.avatar-dialog-content {
+  padding: 20px 0;
+}
+
+.current-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.current-avatar p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.upload-section,
+.preset-section {
+  margin: 20px 0;
+}
+
+.upload-section h4,
+.preset-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.preset-avatars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.preset-avatar-item {
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  justify-content: center;
+}
+
+.preset-avatar-item:hover {
+  transform: scale(1.1);
+}
+
+.el-upload__tip {
+  color: #999;
+  font-size: 12px;
+  margin-top: 8px;
 }
 
 .chat-main {

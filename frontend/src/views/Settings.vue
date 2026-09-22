@@ -12,20 +12,9 @@
           <el-card shadow="never">
             <el-form :model="profileForm" label-width="100px">
               <el-form-item label="头像">
-                <div class="avatar-upload">
-                  <el-avatar :size="80" :src="profileForm.avatar" :icon="UserFilled" />
-                  <div class="avatar-actions">
-                    <el-upload
-                      :show-file-list="false"
-                      :before-upload="beforeAvatarUpload"
-                      :http-request="handleAvatarUpload"
-                      accept="image/*"
-                    >
-                      <el-button type="primary" size="small" :icon="Upload">上传头像</el-button>
-                    </el-upload>
-                    <el-button size="small" @click="handleSelectAvatar">选择预设</el-button>
-                    <el-button v-if="profileForm.avatar" size="small" @click="handleRemoveAvatar">移除头像</el-button>
-                  </div>
+                <el-avatar :size="80" :src="profileForm.avatar" :icon="UserFilled" />
+                <div style="margin-top: 12px; color: #999; font-size: 13px;">
+                  在对话界面点击用户头像可更换头像
                 </div>
               </el-form-item>
               <el-form-item label="用户名">
@@ -181,7 +170,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowLeft, ChatDotSquare, UserFilled, Upload } from '@element-plus/icons-vue'
+import { ArrowLeft, ChatDotSquare, UserFilled } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTheme } from '@/composables/useTheme'
 
@@ -195,18 +184,6 @@ const profileForm = ref({
   username: '',
   avatar: '',
 })
-
-// 预设头像列表
-const presetAvatars = [
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Max',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka',
-]
 
 const modelForm = ref({
   temperature: 0.7,
@@ -466,17 +443,5 @@ onMounted(() => {
 
 .feature-list li {
   list-style-type: disc;
-}
-
-.avatar-upload {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.avatar-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 </style>
