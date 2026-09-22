@@ -166,9 +166,11 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft, ChatDotSquare } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { useTheme } from '@/composables/useTheme'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { theme, fontSize, setTheme, setFontSize } = useTheme()
 
 const activeTab = ref('profile')
 
@@ -184,8 +186,8 @@ const modelForm = ref({
 })
 
 const uiForm = ref({
-  theme: 'light',
-  fontSize: 'medium',
+  theme: theme.value,
+  fontSize: fontSize.value,
   showSources: true,
   enableMarkdown: true,
 })
@@ -221,8 +223,13 @@ const resetModelSettings = () => {
 
 // 保存界面设置
 const saveUISettings = () => {
+  // 应用主题和字体大小
+  setTheme(uiForm.value.theme)
+  setFontSize(uiForm.value.fontSize)
+
+  // 保存其他设置
   localStorage.setItem('uiSettings', JSON.stringify(uiForm.value))
-  ElMessage.success('界面设置已保存')
+  ElMessage.success('界面设置已保存并应用')
 }
 
 // 加载设置
@@ -236,7 +243,12 @@ const loadSettings = () => {
 
   const savedUISettings = localStorage.getItem('uiSettings')
   if (savedUISettings) {
-    uiForm.value = JSON.parse(savedUISettings)
+    const settings = JSON.parse(savedUISettings)
+    uiForm.value = {
+      ...settings,
+      theme: theme.value,
+      fontSize: fontSize.value
+    }
   }
 }
 

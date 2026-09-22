@@ -3,10 +3,10 @@
     <!-- 左侧会话列表 -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <el-button @click="router.push('/dashboard')" :icon="HomeFilled" class="header-button">
+        <el-button @click="router.push('/dashboard')" :icon="HomeFilled" class="header-btn">
           返回首页
         </el-button>
-        <el-button type="primary" @click="handleNewConversation" :icon="Plus" class="header-button">
+        <el-button type="primary" @click="handleNewConversation" :icon="Plus" class="header-btn">
           新建会话
         </el-button>
       </div>
@@ -313,8 +313,9 @@ onMounted(() => {
   gap: 12px;
 }
 
-.header-button {
+.header-btn {
   width: 100%;
+  margin: 0 !important;
 }
 
 .conversation-list {
