@@ -856,6 +856,10 @@ onMounted(() => {
   color: white;
 }
 
+.message-item.assistant .message-bubble {
+  color: #333;
+}
+
 .message-header {
   display: flex;
   justify-content: space-between;
@@ -880,6 +884,11 @@ onMounted(() => {
 .message-content {
   line-height: 1.6;
   word-wrap: break-word;
+  color: #333;
+}
+
+.message-item.user .message-content {
+  color: white;
 }
 
 .message-content :deep(p) {
@@ -891,6 +900,12 @@ onMounted(() => {
   padding: 2px 6px;
   border-radius: 4px;
   font-family: 'Consolas', 'Monaco', monospace;
+  color: #e83e8c;
+}
+
+.message-item.user .message-content :deep(code) {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .message-content :deep(pre) {
@@ -898,6 +913,11 @@ onMounted(() => {
   padding: 12px;
   border-radius: 8px;
   overflow-x: auto;
+}
+
+.message-content :deep(pre code) {
+  background: transparent;
+  color: #333;
 }
 
 .message-content :deep(ul),
