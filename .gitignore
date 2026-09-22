@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+
+# Data
+data/chroma_db/*
+data/uploads/*
+!data/chroma_db/.gitkeep
+!data/uploads/.gitkeep
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.DS_Store
+
+# Crawler output
+crawler/output/*.json
+!crawler/output/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

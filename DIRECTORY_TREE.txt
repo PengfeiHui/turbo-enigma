@@ -1,0 +1,118 @@
+longChain_RAG/
+│
+├── 📄 核心文件
+│   ├── README.md                    # 项目主文档
+│   ├── PROJECT_REQUIREMENTS.md      # 原始需求文档  
+│   ├── docker-compose.yml           # Docker编排配置
+│   └── .gitignore                   # Git忽略规则
+│
+├── 🔧 Windows启动脚本
+│   ├── check-databases.bat          # 检查PostgreSQL和Redis状态
+│   ├── install-dependencies.bat     # 一键安装所有依赖
+│   ├── start-backend.bat            # 启动FastAPI后端
+│   └── start-frontend.bat           # 启动Vue前端
+│
+├── 📚 docs/ - 项目文档
+│   ├── QUICKSTART.md                # 5分钟快速开始
+│   ├── PROJECT_STATUS.md            # 当前项目状态
+│   ├── PROJECT_STRUCTURE.md         # 详细目录结构说明
+│   ├── NAVIGATION.md                # 文档导航指南
+│   ├── TESTING.md                   # 测试说明
+│   ├── SETUP_CHECKLIST.md           # 安装检查清单
+│   ├── FINAL_SUMMARY.md             # 项目总结
+│   ├── DIRECTORY_CLEANUP.md         # 目录整理说明
+│   └── zh/                          # 中文文档
+│       ├── 安装指南.md
+│       ├── 使用指南.md
+│       └── 项目导航.md
+│
+├── 🖥️ backend/ - FastAPI后端服务
+│   ├── app/
+│   │   ├── api/                     # RESTful API路由
+│   │   │   ├── auth.py              # 用户认证
+│   │   │   ├── chat.py              # 对话接口
+│   │   │   ├── conversation.py      # 会话管理
+│   │   │   └── knowledge_base.py    # 知识库管理
+│   │   ├── models/                  # SQLAlchemy数据模型
+│   │   │   ├── user.py
+│   │   │   ├── conversation.py
+│   │   │   ├── message.py
+│   │   │   ├── knowledge_base.py
+│   │   │   └── document.py
+│   │   ├── schemas/                 # Pydantic验证模式
+│   │   │   ├── user.py
+│   │   │   ├── chat.py
+│   │   │   └── knowledge_base.py
+│   │   ├── services/                # 业务逻辑层
+│   │   │   ├── auth_service.py      # 认证服务
+│   │   │   ├── llm_service.py       # LLM调用
+│   │   │   ├── embedding_service.py # 向量嵌入
+│   │   │   ├── vector_store_service.py # 向量存储
+│   │   │   ├── document_processor.py # 文档处理
+│   │   │   └── rag_service.py       # RAG核心逻辑
+│   │   ├── utils/                   # 工具函数
+│   │   │   ├── security.py          # 安全加密
+│   │   │   └── text_splitter.py     # 文本分割
+│   │   ├── config.py                # 配置管理
+│   │   ├── database.py              # 数据库连接
+│   │   ├── dependencies.py          # 依赖注入
+│   │   └── main.py                  # FastAPI应用入口
+│   ├── .env.example                 # 环境变量模板
+│   ├── Dockerfile                   # Docker镜像构建
+│   └── requirements.txt             # Python依赖
+│
+├── 🎨 frontend/ - Vue 3前端应用
+│   ├── src/
+│   │   ├── api/                     # API接口封装
+│   │   │   ├── auth.ts
+│   │   │   ├── chat.ts
+│   │   │   └── kb.ts
+│   │   ├── views/                   # 页面组件
+│   │   │   ├── Login.vue            # 登录页
+│   │   │   ├── Register.vue         # 注册页
+│   │   │   ├── Chat.vue             # 对话页
+│   │   │   └── KnowledgeBase.vue    # 知识库管理
+│   │   ├── stores/                  # Pinia状态管理
+│   │   │   ├── user.ts
+│   │   │   └── chat.ts
+│   │   ├── router/                  # Vue Router
+│   │   │   └── index.ts
+│   │   ├── utils/                   # 工具函数
+│   │   │   └── request.ts           # Axios封装
+│   │   ├── App.vue                  # 根组件
+│   │   └── main.ts                  # 应用入口
+│   ├── index.html
+│   ├── package.json                 # Node.js依赖
+│   ├── vite.config.ts               # Vite配置
+│   └── tsconfig.json                # TypeScript配置
+│
+├── 🕷️ crawler/ - 拼多多商品爬虫
+│   ├── pdd_crawler.py               # 爬虫主程序
+│   ├── requirements.txt             # 爬虫依赖
+│   └── output/                      # 爬取结果输出
+│
+├── 🔧 scripts/ - 工具脚本集合
+│   ├── init_db.py                   # 数据库初始化（创建表+管理员）
+│   ├── generate_test_docs.py        # 生成测试商品文档
+│   ├── import_products.py           # 导入商品数据
+│   ├── check_vector_store.py        # 检查向量库状态
+│   ├── test_api.py                  # API接口测试
+│   ├── test_dashscope_api.py        # 测试阿里百炼API
+│   ├── test_streaming.py            # 测试流式输出
+│   └── test_all.py                  # 全面测试
+│
+├── 🧪 tests/ - 测试资源
+│   └── documents/                   # 测试知识库文档（18个商品）
+│       ├── 01_华为_Mate_60_Pro.txt
+│       ├── 02_小米14_Ultra.txt
+│       ├── 03_iPhone_15_Pro_Max.txt
+│       └── ... (更多商品文档)
+│
+├── 💾 data/ - 运行时数据（.gitignore）
+│   ├── chroma_db/                   # ChromaDB向量数据库
+│   └── uploads/                     # 用户上传的文档
+│
+└── 🤖 .claude/ - Claude AI配置
+    ├── memory/                      # 项目记忆
+    ├── config.md                    # 配置文件
+    └── SKILLS.md                    # 技能定义

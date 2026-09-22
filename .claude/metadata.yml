@@ -1,0 +1,14 @@
+# Project Metadata
+
+name: RAG Knowledge Base QA System
+version: 1.0.0
+status: completed
+created: 2026-09-21
+updated: 2026-09-22
+
+# Tech Stack
+
+backend: FastAPI, Python 3.10+
+frontend: Vue 3, TypeScript
+database: PostgreSQL, Redis, Chroma
+deployment: Docker Compose
