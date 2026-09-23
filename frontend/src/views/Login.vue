@@ -48,11 +48,6 @@
 
         <div class="links">
           <router-link to="/register">还没有账号？立即注册</router-link>
-          <div class="tip">
-            <el-text type="info" size="small">
-              管理员账号：admin / 123456
-            </el-text>
-          </div>
         </div>
       </el-form>
     </el-card>
@@ -65,9 +60,11 @@ import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { login } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
+import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
 const userStore = useUserStore()
+const chatStore = useChatStore()
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
@@ -101,13 +98,33 @@ const handleLogin = async () => {
         password: form.password
       })
 
+      // 清理旧的聊天状态
+      chatStore.clearAll()
+
       userStore.setToken(res.access_token)
       userStore.setUser(res.user)
 
       ElMessage.success('登录成功')
       router.push('/dashboard')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error)
+
+      // 处理特定的错误信息
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail
+        if (detail.includes('尚未注册')) {
+          ElMessage.error({
+            message: detail,
+            duration: 3000
+          })
+        } else if (detail.includes('密码错误')) {
+          ElMessage.error('密码错误，请重新输入')
+        } else {
+          ElMessage.error(detail)
+        }
+      } else {
+        ElMessage.error('登录失败，请稍后重试')
+      }
     } finally {
       loading.value = false
     }

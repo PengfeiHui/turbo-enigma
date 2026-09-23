@@ -1,56 +1,85 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: rag_postgres
+  # PostgreSQL 数据库
+  db:
+    image: postgres:15-alpine
+    container_name: longchain-db
     environment:
-      POSTGRES_DB: rag_db
-      POSTGRES_USER: raguser
-      POSTGRES_PASSWORD: ragpass123
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+      POSTGRES_DB: longchain_rag
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U raguser"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: rag_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
+  # 后端 API
   backend:
-    build: ./backend
-    container_name: rag_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: longchain-backend
+    environment:
+      # 数据库配置
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-postgres123}@db:5432/longchain_rag
+
+      # API Keys
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+
+      # JWT 密钥
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 43200
+
+      # 文件上传配置
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_SIZE: 10485760
+
+      # 向量数据库配置
+      CHROMA_PERSIST_DIR: /app/chroma_db
+      CHROMA_COLLECTION_NAME: longchain_rag
+
+      # AI 模型配置
+      MODEL_NAME: qwen-plus
+      EMBEDDING_MODEL: text-embedding-v3
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/chroma_db:/app/chroma_db
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./data:/app/data
-      - ./backend:/app
-    environment:
-      - DATABASE_URL=postgresql://raguser:ragpass123@postgres:5432/rag_db
-      - REDIS_URL=redis://redis:6379/0
-    env_file:
-      - ./backend/.env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 前端
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: longchain-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: longchain-network

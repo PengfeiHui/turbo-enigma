@@ -58,6 +58,13 @@ export const useChatStore = defineStore('chat', () => {
     messages.value = []
   }
 
+  const clearAll = () => {
+    currentConversationId.value = null
+    conversations.value = []
+    messages.value = []
+    isStreaming.value = false
+  }
+
   return {
     currentConversationId,
     conversations,
@@ -69,6 +76,7 @@ export const useChatStore = defineStore('chat', () => {
     addMessage,
     updateLastMessage,
     setStreaming,
-    reset
+    reset,
+    clearAll
   }
 })

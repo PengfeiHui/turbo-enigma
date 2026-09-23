@@ -31,6 +31,19 @@ async def ask_question(
             detail="会话不存在"
         )
 
+    # 如果是新会话（标题为"新对话"），根据第一个问题生成标题
+    from app.models.message import Message
+    message_count = db.query(Message).filter(
+        Message.conversation_id == request.conversation_id
+    ).count()
+
+    if message_count == 0 and conversation.title == "新对话":
+        # 提取问题的前20个字符作为标题
+        title = request.question[:20]
+        if len(request.question) > 20:
+            title += "..."
+        conversation.title = title
+
     # 更新会话时间
     from sqlalchemy import func
     conversation.updated_at = func.now()

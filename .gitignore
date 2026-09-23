@@ -7,42 +7,74 @@ __pycache__/
 env/
 venv/
 ENV/
-*.egg-info/
-dist/
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Environment variables
-.env
-.env.local
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+.npm
+.eslintcache
 
-# Database
-*.db
-*.sqlite
-
-# Data
-data/chroma_db/*
-data/uploads/*
-!data/chroma_db/.gitkeep
-!data/uploads/.gitkeep
-
-# Logs
-*.log
-
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.DS_Store
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.DS_Store
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# Crawler output
-crawler/output/*.json
-!crawler/output/.gitkeep
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads and data
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/chroma_db/*
+!backend/chroma_db/.gitkeep
+
+# Logs
+*.log
+logs/
 
 # OS
-.DS_Store
 Thumbs.db
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Docker
+.dockerignore
+
+# Misc
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/

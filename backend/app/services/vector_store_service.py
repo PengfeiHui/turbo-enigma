@@ -38,9 +38,20 @@ class VectorStoreService:
 
     async def delete_by_metadata(self, metadata_filter: dict):
         """根据元数据删除文档"""
-        # Chroma 不直接支持异步删除，使用同步方法
-        self.vectorstore.delete(where=metadata_filter)
-        self.vectorstore.persist()
+        try:
+            # Chroma 的 where 参数需要完整的过滤条件
+            # 格式：{"metadata_field": {"$eq": "value"}}
+            where_filter = {}
+            for key, value in metadata_filter.items():
+                where_filter[key] = {"$eq": value}
+
+            # 使用同步方法删除（Chroma 不支持异步删除）
+            self.vectorstore._collection.delete(where=where_filter)
+            self.vectorstore.persist()
+        except Exception as e:
+            print(f"删除向量失败: {str(e)}")
+            # 即使向量删除失败，也不应该阻止文档删除
+            pass
 
     def get_collection_count(self) -> int:
         """获取集合中的文档数量"""

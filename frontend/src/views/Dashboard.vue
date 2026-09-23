@@ -1,127 +1,168 @@
 <template>
-  <div class="dashboard">
-    <div class="header">
-      <h1>LongChain RAG 系统</h1>
-      <div class="user-section">
-        <el-dropdown @command="handleCommand" trigger="click">
-          <div class="user-info">
-            <el-avatar :size="32" :src="userStore.user?.avatar" :icon="UserFilled" />
-            <span>{{ userStore.user?.username }}</span>
-            <el-icon><ArrowDown /></el-icon>
+  <div class="modern-dashboard">
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+      <div class="nav-content">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.3"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
           </div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="avatar">
-                <el-icon><UserFilled /></el-icon>
-                更换头像
-              </el-dropdown-item>
-              <el-dropdown-item command="settings">
-                <el-icon><Setting /></el-icon>
-                个人中心
-              </el-dropdown-item>
-              <el-dropdown-item command="logout" divided>
-                <el-icon><SwitchButton /></el-icon>
-                退出登录
-              </el-dropdown-item>
-            </el-dropdown-menu>
+          <span class="brand-text">LongChain RAG</span>
+        </div>
+
+        <div class="nav-actions">
+          <button class="nav-btn" @click="router.push('/chat')">
+            <el-icon><ChatDotSquare /></el-icon>
+            <span>开始对话</span>
+          </button>
+
+          <el-dropdown @command="handleCommand" trigger="click">
+            <div class="user-menu">
+              <el-avatar :size="36" :src="userStore.user?.avatar" :icon="UserFilled" />
+              <span class="username">{{ userStore.user?.username }}</span>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="avatar">
+                  <el-icon><UserFilled /></el-icon>
+                  更换头像
+                </el-dropdown-item>
+                <el-dropdown-item command="settings">
+                  <el-icon><Setting /></el-icon>
+                  个人中心
+                </el-dropdown-item>
+                <el-dropdown-item command="logout" divided>
+                  <el-icon><SwitchButton /></el-icon>
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="dashboard-main">
+      <!-- 欢迎区域 -->
+      <section class="welcome-section">
+        <div class="welcome-content">
+          <h1 class="greeting">
+            {{ getGreeting() }}，<span class="highlight">{{ userStore.user?.username }}</span>
+          </h1>
+          <p class="tagline">基于知识库的智能对话系统，让信息触手可及</p>
+        </div>
+
+        <!-- 统计卡片 - 现代化设计 -->
+        <div class="stats-cards">
+          <div class="stat-card stat-primary">
+            <div class="stat-content">
+              <div class="stat-label">对话次数</div>
+              <div class="stat-value">{{ stats.conversations }}</div>
+            </div>
+            <div class="stat-icon">
+              <el-icon><ChatDotRound /></el-icon>
+            </div>
+          </div>
+
+          <div class="stat-card stat-success">
+            <div class="stat-content">
+              <div class="stat-label">消息总数</div>
+              <div class="stat-value">{{ stats.messages }}</div>
+            </div>
+            <div class="stat-icon">
+              <el-icon><ChatLineRound /></el-icon>
+            </div>
+          </div>
+
+          <template v-if="userStore.isAdmin()">
+            <div class="stat-card stat-warning">
+              <div class="stat-content">
+                <div class="stat-label">知识文档</div>
+                <div class="stat-value">{{ stats.documents }}</div>
+              </div>
+              <div class="stat-icon">
+                <el-icon><Document /></el-icon>
+              </div>
+            </div>
+
+            <div class="stat-card stat-info">
+              <div class="stat-content">
+                <div class="stat-label">文本块数</div>
+                <div class="stat-value">{{ stats.chunks }}</div>
+              </div>
+              <div class="stat-icon">
+                <el-icon><Grid /></el-icon>
+              </div>
+            </div>
           </template>
-        </el-dropdown>
-      </div>
-    </div>
+        </div>
+      </section>
 
-    <div class="dashboard-content">
-      <!-- 统计卡片 -->
-      <div class="stats-grid">
-        <el-card class="stat-card" shadow="hover">
-          <div class="stat-icon conversations">
-            <el-icon :size="32"><ChatDotRound /></el-icon>
+      <!-- 快速操作区域 -->
+      <section class="quick-actions">
+        <h2 class="section-title">快速开始</h2>
+        <div class="action-grid">
+          <div class="action-card action-chat" @click="router.push('/chat')">
+            <div class="action-bg"></div>
+            <div class="action-content">
+              <div class="action-icon">
+                <el-icon><ChatDotSquare /></el-icon>
+              </div>
+              <h3>智能对话</h3>
+              <p>与 AI 开始新的对话</p>
+            </div>
           </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.conversations }}</div>
-            <div class="stat-label">会话数量</div>
-          </div>
-        </el-card>
 
-        <el-card class="stat-card" shadow="hover">
-          <div class="stat-icon messages">
-            <el-icon :size="32"><ChatLineRound /></el-icon>
+          <div v-if="userStore.isAdmin()" class="action-card action-kb" @click="router.push('/kb-manage')">
+            <div class="action-bg"></div>
+            <div class="action-content">
+              <div class="action-icon">
+                <el-icon><FolderOpened /></el-icon>
+              </div>
+              <h3>知识库</h3>
+              <p>管理文档和知识</p>
+            </div>
           </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.messages }}</div>
-            <div class="stat-label">消息数量</div>
-          </div>
-        </el-card>
 
-        <el-card class="stat-card" shadow="hover">
-          <div class="stat-icon documents">
-            <el-icon :size="32"><Document /></el-icon>
+          <div class="action-card action-history" @click="router.push('/history')">
+            <div class="action-bg"></div>
+            <div class="action-content">
+              <div class="action-icon">
+                <el-icon><Clock /></el-icon>
+              </div>
+              <h3>历史记录</h3>
+              <p>查看过往对话</p>
+            </div>
           </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.documents }}</div>
-            <div class="stat-label">知识库文档</div>
-          </div>
-        </el-card>
 
-        <el-card class="stat-card" shadow="hover">
-          <div class="stat-icon chunks">
-            <el-icon :size="32"><Grid /></el-icon>
+          <div class="action-card action-settings" @click="router.push('/settings')">
+            <div class="action-bg"></div>
+            <div class="action-content">
+              <div class="action-icon">
+                <el-icon><Setting /></el-icon>
+              </div>
+              <h3>系统设置</h3>
+              <p>个性化配置</p>
+            </div>
           </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ stats.chunks }}</div>
-            <div class="stat-label">文本块总数</div>
-          </div>
-        </el-card>
-      </div>
-
-      <!-- 功能入口 -->
-      <div class="features-grid">
-        <el-card class="feature-card" shadow="hover" @click="router.push('/chat')">
-          <div class="feature-icon chat">
-            <el-icon :size="48"><ChatDotSquare /></el-icon>
-          </div>
-          <h3>智能对话</h3>
-          <p>基于知识库的智能问答，支持上下文理解和多轮对话</p>
-          <el-button type="primary" text>开始对话 →</el-button>
-        </el-card>
-
-        <el-card class="feature-card" shadow="hover" @click="router.push('/kb-manage')" v-if="userStore.isAdmin()">
-          <div class="feature-icon kb">
-            <el-icon :size="48"><FolderOpened /></el-icon>
-          </div>
-          <h3>知识库管理</h3>
-          <p>上传、管理文档，自动分块和向量化，构建专属知识库</p>
-          <el-button type="primary" text>管理知识库 →</el-button>
-        </el-card>
-
-        <el-card class="feature-card" shadow="hover" @click="router.push('/history')">
-          <div class="feature-icon history">
-            <el-icon :size="48"><Clock /></el-icon>
-          </div>
-          <h3>历史记录</h3>
-          <p>查看和管理所有对话历史，支持搜索和导出功能</p>
-          <el-button type="primary" text>查看历史 →</el-button>
-        </el-card>
-
-        <el-card class="feature-card" shadow="hover" @click="router.push('/settings')">
-          <div class="feature-icon settings">
-            <el-icon :size="48"><Setting /></el-icon>
-          </div>
-          <h3>系统设置</h3>
-          <p>配置模型参数、调整回答风格、管理个人信息</p>
-          <el-button type="primary" text>进入设置 →</el-button>
-        </el-card>
-      </div>
+        </div>
+      </section>
 
       <!-- 最近对话 -->
-      <el-card class="recent-card" shadow="hover">
-        <template #header>
-          <div class="card-header">
-            <span>最近对话</span>
-            <el-button text type="primary" @click="router.push('/chat')">
-              查看全部 →
-            </el-button>
-          </div>
-        </template>
+      <section class="recent-section">
+        <div class="section-header">
+          <h2 class="section-title">最近对话</h2>
+          <button class="view-all-btn" @click="router.push('/chat')">
+            查看全部
+            <el-icon><ArrowRight /></el-icon>
+          </button>
+        </div>
+
         <div v-loading="loading" class="recent-list">
           <div
             v-for="conv in recentConversations"
@@ -129,15 +170,25 @@
             class="recent-item"
             @click="goToConversation(conv.id)"
           >
+            <div class="recent-icon">
+              <el-icon><ChatLineRound /></el-icon>
+            </div>
             <div class="recent-info">
               <div class="recent-title">{{ conv.title }}</div>
               <div class="recent-time">{{ formatTime(conv.updated_at) }}</div>
             </div>
-            <el-icon class="recent-arrow"><ArrowRight /></el-icon>
+            <div class="recent-arrow">
+              <el-icon><ArrowRight /></el-icon>
+            </div>
           </div>
-          <el-empty v-if="recentConversations.length === 0 && !loading" description="暂无对话记录" />
+
+          <div v-if="recentConversations.length === 0 && !loading" class="empty-recent">
+            <el-icon :size="48"><ChatDotRound /></el-icon>
+            <p>暂无对话记录</p>
+            <button class="start-btn" @click="router.push('/chat')">开始第一次对话</button>
+          </div>
         </div>
-      </el-card>
+      </section>
     </div>
 
     <!-- 更换头像对话框 -->
@@ -210,7 +261,6 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   UserFilled,
-  ArrowDown,
   SwitchButton,
   ChatDotRound,
   ChatLineRound,
@@ -239,22 +289,41 @@ const stats = ref({
   documents: 0,
   chunks: 0
 })
+const avatarDialogVisible = ref(false)
+
+// 预设头像列表
+const presetAvatars = [
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Max',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
+  'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka',
+]
+
+// 获取问候语
+const getGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour < 6) return '夜深了'
+  if (hour < 9) return '早上好'
+  if (hour < 12) return '上午好'
+  if (hour < 14) return '中午好'
+  if (hour < 18) return '下午好'
+  if (hour < 22) return '晚上好'
+  return '夜深了'
+}
 
 // 加载统计数据
 const loadStats = async () => {
   loading.value = true
   try {
-    // 加载会话
     const conversations = await getConversations()
     stats.value.conversations = conversations.length
-
-    // 计算消息总数
     stats.value.messages = conversations.reduce((sum, conv) => sum + (conv.message_count || 0), 0)
-
-    // 最近5个会话
     recentConversations.value = conversations.slice(0, 5)
 
-    // 加载文档（仅管理员）
     if (userStore.isAdmin()) {
       const docs = await getDocuments()
       stats.value.documents = docs.documents.length
@@ -299,28 +368,8 @@ const handleCommand = (command: string) => {
   } else if (command === 'settings') {
     router.push('/settings')
   } else if (command === 'avatar') {
-    showAvatarDialog()
+    avatarDialogVisible.value = true
   }
-}
-
-// 预设头像列表
-const presetAvatars = [
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Max',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie',
-  'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Felix',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=Aneka',
-]
-
-const avatarDialogVisible = ref(false)
-const uploadRef = ref()
-
-// 显示头像对话框
-const showAvatarDialog = () => {
-  avatarDialogVisible.value = true
 }
 
 // 头像上传前检查
@@ -374,234 +423,472 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dashboard {
+.modern-dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
 }
 
-.header {
+/* 顶部导航 */
+.top-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 40px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.header h1 {
-  margin: 0;
-  font-size: 24px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
-  font-weight: 600;
 }
 
-.user-section {
+.brand-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.user-info {
+.nav-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  color: white;
 }
 
-.user-info:hover {
-  background: rgba(255, 255, 255, 0.3);
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-.dashboard-content {
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  background: #f5f7fa;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.user-menu:hover {
+  background: #e8ecf1;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 主要内容 */
+.dashboard-main {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 32px;
 }
 
-.stats-grid {
+/* 欢迎区域 */
+.welcome-section {
+  margin-bottom: 48px;
+}
+
+.welcome-content {
+  margin-bottom: 32px;
+}
+
+.greeting {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* 统计卡片 - 现代化 */
+.stats-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 900px;
 }
 
 .stat-card {
-  display: flex;
-  gap: 16px;
+  background: white;
+  border-radius: 16px;
   padding: 24px;
-  cursor: pointer;
-  transition: transform 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s;
+  border: 2px solid transparent;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.stat-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+.stat-card.stat-primary {
+  border-color: #667eea;
 }
 
-.stat-icon.conversations {
+.stat-card.stat-primary .stat-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.stat-icon.messages {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.stat-card.stat-success {
+  border-color: #42d392;
 }
 
-.stat-icon.documents {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.stat-card.stat-success .stat-icon {
+  background: linear-gradient(135deg, #42d392 0%, #37b67e 100%);
 }
 
-.stat-icon.chunks {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+.stat-card.stat-warning {
+  border-color: #ffb648;
 }
 
-.stat-info {
+.stat-card.stat-warning .stat-icon {
+  background: linear-gradient(135deg, #ffb648 0%, #ffa726 100%);
+}
+
+.stat-card.stat-info {
+  border-color: #4fc3f7;
+}
+
+.stat-card.stat-info .stat-icon {
+  background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
+}
+
+.stat-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .stat-value {
   font-size: 32px;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
-  margin-bottom: 8px;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
-.stat-label {
-  font-size: 14px;
-  color: #999;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
-}
-
-.feature-card {
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-.feature-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  border-radius: 20px;
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  font-size: 24px;
 }
 
-.feature-icon.chat {
+/* 快速操作 */
+.quick-actions {
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.action-card {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  padding: 32px 24px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.action-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.action-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.4s;
+}
+
+.action-card:hover .action-bg {
+  transform: scale(1.3);
+  opacity: 0.15;
+}
+
+.action-chat .action-bg {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.feature-icon.kb {
+.action-kb .action-bg {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
-.feature-icon.history {
+.action-history .action-bg {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
-.feature-icon.settings {
+.action-settings .action-bg {
   background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
 }
 
-.feature-card h3 {
-  margin: 0 0 12px 0;
-  font-size: 20px;
-  color: #333;
+.action-content {
+  position: relative;
+  z-index: 1;
 }
 
-.feature-card p {
-  margin: 0 0 20px 0;
+.action-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 24px;
+  color: white;
+}
+
+.action-chat .action-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-kb .action-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.action-history .action-icon {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.action-settings .action-icon {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.action-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.action-card p {
   font-size: 14px;
   color: #666;
-  line-height: 1.6;
-  min-height: 42px;
+  margin: 0;
 }
 
-.recent-card {
-  margin-bottom: 40px;
+/* 最近对话 */
+.recent-section {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.card-header {
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.view-all-btn:hover {
+  background: #f5f7fa;
+  border-color: #667eea;
+  color: #667eea;
 }
 
 .recent-list {
-  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .recent-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .recent-item:hover {
-  background: #f5f5f5;
+  background: #f8f9ff;
+}
+
+.recent-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  flex-shrink: 0;
 }
 
 .recent-info {
   flex: 1;
+  min-width: 0;
 }
 
 .recent-title {
   font-size: 15px;
-  color: #333;
+  font-weight: 600;
+  color: #1a1a1a;
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .recent-time {
   font-size: 13px;
-  color: #999;
+  color: #888;
 }
 
 .recent-arrow {
-  color: #999;
-  transition: transform 0.2s;
+  color: #ccc;
+  font-size: 18px;
+  transition: all 0.3s;
 }
 
 .recent-item:hover .recent-arrow {
+  color: #667eea;
   transform: translateX(4px);
-  color: #409eff;
+}
+
+.empty-recent {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.empty-recent .el-icon {
+  color: #ddd;
+  margin-bottom: 16px;
+}
+
+.empty-recent p {
+  font-size: 14px;
+  color: #999;
+  margin: 0 0 24px 0;
+}
+
+.start-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
 /* 头像对话框 */
@@ -649,11 +936,5 @@ onMounted(() => {
 
 .preset-avatar-item:hover {
   transform: scale(1.1);
-}
-
-.el-upload__tip {
-  color: #999;
-  font-size: 12px;
-  margin-top: 8px;
 }
 </style>

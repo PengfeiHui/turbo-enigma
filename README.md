@@ -1,269 +1,272 @@
-# RAG 企业级知识库问答系统
+# LongChain RAG 智能对话系统
 
-基于 LangChain 的 RAG（Retrieval-Augmented Generation）企业级知识库问答系统，专注于电商平台商品信息的智能问答。
+<div align="center">
 
-## 🚀 功能特性
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10+-green.svg)
+![Vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)
+![FastAPI](https://img.shields.io/badge/fastapi-0.104+-blue.svg)
 
-- ✅ **知识库管理**：支持 PDF、DOCX、TXT 文档上传，自动向量化存储
-- ✅ **智能问答**：基于 RAG 技术，引用知识库内容回答问题
-- ✅ **多用户多会话**：独立会话管理，历史记录持久化
-- ✅ **用户认证**：注册登录、密码修改、JWT 认证
-- ✅ **权限控制**：管理员专属知识库管理权限
-- ✅ **流式响应**：实时流式输出 AI 回答
-- ✅ **引用展示**：显示引用的知识库片段及相似度
-- ✅ **企业级优化**：Redis 缓存、异步处理、API 限流
+基于大语言模型和向量数据库的知识库问答系统
 
-## 📦 技术栈
+[在线演示](#) | [快速开始](#-快速开始) | [部署指南](QUICK_DEPLOY.md) | [文档](#-文档)
+
+</div>
+
+---
+
+## ✨ 特性
+
+- 🤖 **智能对话**：基于阿里云通义千问大模型，支持上下文理解和多轮对话
+- 📚 **知识库管理**：支持上传 PDF、DOCX、TXT 文档，自动分块和向量化
+- 🔍 **语义检索**：使用 Chroma 向量数据库，支持高效的相似度搜索
+- 🎨 **现代化 UI**：全新设计的界面，摆脱 AI 味，品牌感强
+- 📁 **文档分类**：支持创建文件夹，分类管理知识库文档
+- 👥 **用户管理**：支持管理员和普通用户角色，权限分离
+- 💬 **实时流式输出**：AI 回答实时显示，体验流畅
+- 📖 **来源追溯**：展示答案的引用来源和相似度
+- 🔐 **安全可靠**：JWT 认证，密码加密，防 SQL 注入
+
+---
+
+## 🏗️ 技术栈
 
 ### 后端
-- **框架**：FastAPI + Uvicorn
-- **AI 框架**：LangChain + 阿里百炼（通义千问）
-- **向量数据库**：Chroma
-- **关系数据库**：PostgreSQL
-- **缓存**：Redis
-- **认证**：JWT + bcrypt
+- **FastAPI** - 现代化的 Python Web 框架
+- **LangChain** - LLM 应用开发框架
+- **Chroma** - 向量数据库
+- **PostgreSQL** - 关系型数据库
+- **SQLAlchemy** - ORM 框架
+- **Alembic** - 数据库迁移工具
+- **DashScope** - 阿里云通义千问 API
 
 ### 前端
-- **框架**：Vue 3 + TypeScript + Vite
-- **UI 组件**：Element Plus
-- **状态管理**：Pinia
-- **HTTP 客户端**：Axios
+- **Vue 3** - 渐进式 JavaScript 框架
+- **TypeScript** - 类型安全的 JavaScript
+- **Element Plus** - Vue 3 组件库
+- **Vite** - 新一代前端构建工具
+- **Pinia** - Vue 状态管理
+- **Axios** - HTTP 客户端
 
-### 爬虫
-- **框架**：Playwright
-- **数据源**：拼多多商品信息
+### 部署
+- **Docker** - 容器化部署
+- **Docker Compose** - 多容器编排
+- **Nginx** - 反向代理和静态文件服务
+
+---
+
+## 🚀 快速开始
+
+### 前置要求
+
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL 15+
+- Docker & Docker Compose（推荐）
+
+### 方式一：Docker 部署（推荐）
+
+```bash
+# 1. 克隆项目
+git clone https://gitee.com/your-username/longChain_RAG.git
+cd longChain_RAG
+
+# 2. 配置环境变量
+cp .env.example .env
+nano .env  # 填入你的 API Key 和密钥
+
+# 3. 一键部署
+chmod +x deploy.sh
+sudo ./deploy.sh
+
+# 4. 访问系统
+# 浏览器打开：http://localhost
+# 默认账号：admin / admin123456
+```
+
+### 方式二：本地开发
+
+#### 后端
+
+```bash
+cd backend
+
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 配置环境变量
+cp .env.example .env
+nano .env
+
+# 初始化数据库
+alembic upgrade head
+
+# 启动后端
+uvicorn app.main:app --reload
+```
+
+#### 前端
+
+```bash
+cd frontend
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+```
+
+访问 `http://localhost:5173`
+
+---
+
+## 📖 文档
+
+- [快速部署指南](QUICK_DEPLOY.md) - 云服务器部署步骤
+- [完整部署文档](DEPLOYMENT.md) - 详细的部署说明
+- [API 文档](http://localhost:8000/docs) - FastAPI 自动生成的 API 文档
+
+---
+
+## 🎯 功能演示
+
+### 智能对话
+![对话界面](docs/images/chat.png)
+
+### 知识库管理
+![知识库管理](docs/images/kb-manage.png)
+
+### 文档分类
+![文档分类](docs/images/categories.png)
+
+---
 
 ## 📂 项目结构
 
 ```
 longChain_RAG/
-├── backend/          # 后端服务
+├── backend/                # 后端代码
 │   ├── app/
-│   │   ├── api/      # API 路由
-│   │   ├── models/   # 数据库模型
-│   │   ├── schemas/  # 数据验证
-│   │   ├── services/ # 业务逻辑
-│   │   └── utils/    # 工具函数
-│   └── requirements.txt
-├── frontend/         # 前端项目
-├── crawler/          # 爬虫模块
-├── scripts/          # 脚本工具
-├── data/             # 数据目录
-│   ├── chroma_db/    # 向量数据库
-│   └── uploads/      # 上传文档
-└── docker-compose.yml
+│   │   ├── api/           # API 路由
+│   │   ├── models/        # 数据库模型
+│   │   ├── schemas/       # Pydantic 模型
+│   │   ├── services/      # 业务逻辑
+│   │   └── utils/         # 工具函数
+│   ├── alembic/           # 数据库迁移
+│   ├── uploads/           # 上传文件存储
+│   └── chroma_db/         # 向量数据库
+├── frontend/              # 前端代码
+│   ├── src/
+│   │   ├── views/        # 页面组件
+│   │   ├── stores/       # 状态管理
+│   │   ├── api/          # API 调用
+│   │   └── utils/        # 工具函数
+│   └── public/           # 静态资源
+├── docker-compose.yml    # Docker 编排
+├── deploy.sh             # 一键部署脚本
+└── README.md             # 项目说明
 ```
-
-## 🛠️ 快速开始
-
-### 1. 环境准备
-
-**前置要求：**
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL 15+
-- Redis 7+
-
-### 2. 后端部署
-
-```bash
-# 进入后端目录
-cd backend
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 复制环境变量配置
-cp .env.example .env
-
-# 编辑 .env 文件，填入你的配置：
-# - DATABASE_URL：PostgreSQL 连接字符串
-# - REDIS_URL：Redis 连接字符串
-# - DASHSCOPE_API_KEY：阿里百炼 API Key
-# - SECRET_KEY：JWT 密钥
-
-# 初始化数据库
-python ../scripts/init_db.py
-
-# 启动服务
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-访问 http://localhost:8000/docs 查看 API 文档
-
-### 3. 爬虫数据采集（可选）
-
-```bash
-# 进入爬虫目录
-cd crawler
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 安装 Playwright 浏览器
-playwright install chromium
-
-# 运行爬虫
-python pdd_crawler.py
-
-# 导入数据到向量库
-cd ..
-python scripts/import_products.py
-```
-
-### 4. 前端部署（下一步）
-
-前端代码将在后续创建...
-
-### 5. Docker 部署（推荐）
-
-```bash
-# 启动所有服务
-docker-compose up -d
-
-# 查看日志
-docker-compose logs -f
-
-# 停止服务
-docker-compose down
-```
-
-## 🔑 默认账户
-
-- **管理员**：
-  - 用户名：`admin`
-  - 密码：`123456`
-  - 权限：知识库管理、问答功能
-
-## 📖 API 文档
-
-启动后端服务后访问：
-- Swagger UI：http://localhost:8000/docs
-- ReDoc：http://localhost:8000/redoc
-
-### 主要接口
-
-**认证相关：**
-- `POST /api/auth/register` - 用户注册
-- `POST /api/auth/login` - 用户登录
-- `GET /api/auth/me` - 获取当前用户信息
-- `POST /api/auth/change-password` - 修改密码
-
-**会话管理：**
-- `POST /api/conversations` - 创建会话
-- `GET /api/conversations` - 获取会话列表
-- `GET /api/conversations/{id}/messages` - 获取历史消息
-- `DELETE /api/conversations/{id}` - 删除会话
-
-**问答：**
-- `POST /api/chat/ask` - 流式问答（SSE）
-
-**知识库管理（仅管理员）：**
-- `POST /api/kb/upload` - 上传文档
-- `GET /api/kb/documents` - 获取文档列表
-- `DELETE /api/kb/documents/{id}` - 删除文档
-
-## 🎯 使用说明
-
-### 1. 注册登录
-1. 访问前端页面
-2. 注册普通用户账号或使用管理员账号登录
-
-### 2. 知识库管理（管理员）
-1. 登录管理员账号
-2. 进入知识库管理页面
-3. 上传 PDF/DOCX/TXT 文档
-4. 系统自动分割文本并向量化
-
-### 3. 智能问答
-1. 创建新会话
-2. 输入问题（例如："有什么蓝牙耳机推荐？"）
-3. 系统检索相关商品信息并生成回答
-4. 查看引用来源（点击展开查看原文片段）
-
-## 🧪 测试数据
-
-系统已内置模拟商品数据，包含：
-- 手机（华为、小米、iPhone 等）
-- 耳机（AirPods、索尼、华为等）
-- 充电宝（小米、罗马仕、Anker 等）
-
-## 📈 性能优化
-
-- **缓存策略**：Redis 缓存用户会话和常见问题
-- **异步处理**：所有 I/O 操作使用 async/await
-- **流式响应**：LLM 输出实时推送，提升体验
-- **向量检索**：Chroma HNSW 索引，快速相似度搜索
-- **API 限流**：防止滥用，保护服务稳定性
-
-## 🔧 配置说明
-
-### LLM 模型配置
-
-在 `.env` 文件中修改：
-
-```env
-# 模型选择（qwen-turbo/qwen-plus/qwen-max）
-LLM_MODEL=qwen-plus
-
-# 生成温度（0-1，越高越随机）
-LLM_TEMPERATURE=0.7
-
-# Embedding 模型
-EMBEDDING_MODEL=text-embedding-v2
-```
-
-### RAG 参数调优
-
-在 `backend/app/config.py` 中修改：
-
-```python
-# 文本分块大小
-CHUNK_SIZE: int = 500
-
-# 分块重叠
-CHUNK_OVERLAP: int = 100
-
-# 检索 Top-K
-RETRIEVAL_TOP_K: int = 5
-```
-
-## 🐛 常见问题
-
-### 1. 数据库连接失败
-- 检查 PostgreSQL 是否启动
-- 确认 DATABASE_URL 配置正确
-
-### 2. Redis 连接失败
-- 检查 Redis 是否启动
-- 确认 REDIS_URL 配置正确
-
-### 3. 阿里百炼 API 调用失败
-- 检查 DASHSCOPE_API_KEY 是否正确
-- 确认账户余额充足
-- 查看 API 限流策略
-
-### 4. 向量库为空
-- 运行 `python scripts/import_products.py` 导入数据
-- 或上传文档到知识库
-
-## 📝 开发计划
-
-- [ ] 前端界面开发
-- [ ] 多知识库切换
-- [ ] 问题推荐功能
-- [ ] 答案评价系统
-- [ ] 导出对话功能
-- [ ] 管理员统计面板
-
-## 📄 许可证
-
-MIT License
-
-## 👥 联系方式
-
-如有问题或建议，欢迎提 Issue。
 
 ---
 
-**毕业设计项目** - 基于 LangChain 的 RAG 企业级知识库问答系统
+## 🔧 配置说明
+
+### 环境变量
+
+```env
+# 数据库
+DATABASE_URL=postgresql://user:password@localhost:5432/longchain_rag
+
+# API Keys
+DASHSCOPE_API_KEY=your_api_key_here
+
+# JWT
+SECRET_KEY=your_secret_key_here
+ACCESS_TOKEN_EXPIRE_MINUTES=43200
+
+# 文件上传
+MAX_UPLOAD_SIZE=10485760  # 10MB
+
+# 向量数据库
+CHROMA_PERSIST_DIR=./chroma_db
+```
+
+### 获取 DashScope API Key
+
+1. 访问 [阿里云 DashScope](https://dashscope.console.aliyun.com/)
+2. 注册/登录账号
+3. 创建 API Key
+4. 复制 Key 到 `.env` 文件
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
+
+---
+
+## 📝 开发计划
+
+- [ ] 支持更多文档格式（Markdown、HTML）
+- [ ] 多知识库切换
+- [ ] 对话导出为 Markdown/PDF
+- [ ] 语音输入/输出
+- [ ] 移动端适配
+- [ ] 多语言支持
+- [ ] 对话分享功能
+
+---
+
+## ⚠️ 注意事项
+
+1. **API Key**：请妥善保管你的 DashScope API Key，不要泄露
+2. **生产部署**：建议配置 SSL 证书，使用 HTTPS
+3. **数据备份**：定期备份数据库和上传的文档
+4. **安全加固**：修改默认密码，配置防火墙
+
+---
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
+
+---
+
+## 💬 联系方式
+
+- 作者：[Your Name]
+- Email：your.email@example.com
+- Gitee：https://gitee.com/your-username
+
+---
+
+## 🙏 致谢
+
+- [FastAPI](https://fastapi.tiangolo.com/) - 现代化的 Python Web 框架
+- [LangChain](https://www.langchain.com/) - LLM 应用开发框架
+- [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
+- [Element Plus](https://element-plus.org/) - Vue 3 组件库
+- [Chroma](https://www.trychroma.com/) - 开源向量数据库
+- [阿里云 DashScope](https://dashscope.aliyun.com/) - 通义千问 API
+
+---
+
+<div align="center">
+
+**如果这个项目对你有帮助，请给个 ⭐️ Star 支持一下！**
+
+Made with ❤️ by [Your Name]
+
+</div>

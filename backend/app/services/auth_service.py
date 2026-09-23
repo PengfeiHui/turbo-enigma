@@ -7,14 +7,21 @@ class AuthService:
     """认证服务"""
 
     @staticmethod
-    def authenticate_user(db: Session, username: str, password: str) -> User:
-        """验证用户登录"""
+    def authenticate_user(db: Session, username: str, password: str) -> tuple[User | None, str]:
+        """验证用户登录
+
+        Returns:
+            tuple: (user, error_message)
+            - 成功: (User对象, "")
+            - 用户不存在: (None, "user_not_found")
+            - 密码错误: (None, "wrong_password")
+        """
         user = db.query(User).filter(User.username == username).first()
         if not user:
-            return None
+            return None, "user_not_found"
         if not verify_password(password, user.password_hash):
-            return None
-        return user
+            return None, "wrong_password"
+        return user, ""
 
     @staticmethod
     def create_user(db: Session, username: str, password: str, role: str = "user") -> User:

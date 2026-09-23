@@ -29,13 +29,20 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin, db: Session = Depends(get_db)):
     """用户登录"""
-    user = auth_service.authenticate_user(db, credentials.username, credentials.password)
+    user, error_message = auth_service.authenticate_user(db, credentials.username, credentials.password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户名或密码错误",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if error_message == "user_not_found":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="该用户尚未注册，请先注册",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        else:  # wrong_password
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="密码错误",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     token = auth_service.generate_token(user)
     return TokenResponse(

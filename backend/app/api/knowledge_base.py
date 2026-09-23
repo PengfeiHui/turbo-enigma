@@ -172,20 +172,31 @@ async def delete_document(
         )
 
     try:
-        # 1. 从向量库删除
-        await vector_store_service.delete_by_metadata({"filename": document.filename})
+        # 1. 从向量库删除（失败不影响后续删除）
+        try:
+            await vector_store_service.delete_by_metadata({"filename": document.filename})
+            print(f"✓ 向量库删除成功: {document.filename}")
+        except Exception as e:
+            print(f"⚠ 向量库删除失败（继续执行）: {str(e)}")
 
-        # 2. 删除物理文件
-        if os.path.exists(document.file_path):
-            os.remove(document.file_path)
+        # 2. 删除物理文件（失败不影响数据库删除）
+        try:
+            if document.file_path and os.path.exists(document.file_path):
+                os.remove(document.file_path)
+                print(f"✓ 文件删除成功: {document.file_path}")
+        except Exception as e:
+            print(f"⚠ 文件删除失败（继续执行）: {str(e)}")
 
-        # 3. 从数据库删除
+        # 3. 从数据库删除（这是最重要的）
         db.delete(document)
         db.commit()
+        print(f"✓ 数据库删除成功: {document.filename}")
 
         return None
 
     except Exception as e:
+        db.rollback()
+        print(f"✗ 删除失败: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"删除失败: {str(e)}"
