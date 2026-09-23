@@ -133,19 +133,6 @@ npm run dev
 
 ---
 
-## 🎯 功能演示
-
-### 智能对话
-![对话界面](docs/images/chat.png)
-
-### 知识库管理
-![知识库管理](docs/images/kb-manage.png)
-
-### 文档分类
-![文档分类](docs/images/categories.png)
-
----
-
 ## 📂 项目结构
 
 ```
@@ -209,25 +196,6 @@ CHROMA_PERSIST_DIR=./chroma_db
 
 欢迎提交 Issue 和 Pull Request！
 
-1. Fork 本项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
-
----
-
-## 📝 开发计划
-
-- [ ] 支持更多文档格式（Markdown、HTML）
-- [ ] 多知识库切换
-- [ ] 对话导出为 Markdown/PDF
-- [ ] 语音输入/输出
-- [ ] 移动端适配
-- [ ] 多语言支持
-- [ ] 对话分享功能
-
----
 
 ## ⚠️ 注意事项
 
@@ -246,9 +214,9 @@ CHROMA_PERSIST_DIR=./chroma_db
 
 ## 💬 联系方式
 
-- 作者：[Your Name]
-- Email：your.email@example.com
-- Gitee：https://gitee.com/your-username
+- 作者：Pengfei Hui
+- Email：3036209006@qq.com
+- Gitee：https://gitee.com/huipengfei
 
 ---
 
