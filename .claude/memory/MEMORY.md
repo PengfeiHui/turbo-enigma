@@ -8,6 +8,7 @@
 - [technical_decisions.md](technical_decisions.md) — 关键技术选型和架构决策
 - [deployment_guide.md](deployment_guide.md) — 生产环境部署指南和配置清单
 - [known_issues.md](known_issues.md) — 已知问题、Bug 修复记录和调试技巧
+- [github_ssh_key.md](github_ssh_key.md) — GitHub SSH 公钥信息
 
 ## 🎯 快速导航
 

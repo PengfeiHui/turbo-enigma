@@ -15,12 +15,13 @@
         label-width="0"
         size="large"
       >
-        <el-form-item prop="username">
+        <el-form-item prop="account">
           <el-input
-            v-model="form.username"
-            placeholder="用户名"
+            v-model="form.account"
+            placeholder="请输入11位数字账号"
             prefix-icon="User"
             clearable
+            maxlength="11"
           />
         </el-form-item>
 
@@ -70,18 +71,18 @@ const formRef = ref<FormInstance>()
 const loading = ref(false)
 
 const form = reactive({
-  username: '',
+  account: '',
   password: ''
 })
 
 const rules: FormRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 50, message: '用户名长度为 3-50 个字符', trigger: 'blur' }
+  account: [
+    { required: true, message: '请输入账号', trigger: 'blur' },
+    { pattern: /^\d{11}$/, message: '账号必须是11位数字', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码至少 6 位', trigger: 'blur' }
+    { min: 6, max: 20, message: '密码长度为 6-20 个字符', trigger: 'blur' }
   ]
 }
 
@@ -94,7 +95,7 @@ const handleLogin = async () => {
     loading.value = true
     try {
       const res = await login({
-        username: form.username,
+        account: form.account,
         password: form.password
       })
 
