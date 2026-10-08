@@ -56,14 +56,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { login } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const chatStore = useChatStore()
 
@@ -73,6 +74,14 @@ const loading = ref(false)
 const form = reactive({
   account: '',
   password: ''
+})
+
+// 组件挂载时，检查是否有注册传递过来的账号
+onMounted(() => {
+  if (route.query.account) {
+    form.account = route.query.account as string
+    ElMessage.success('注册成功！账号已自动填充，请输入密码登录')
+  }
 })
 
 const rules: FormRules = {

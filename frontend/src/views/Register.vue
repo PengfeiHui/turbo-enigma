@@ -165,12 +165,15 @@ const handleRegister = async () => {
       // 显示生成的账号
       generatedAccount.value = res.account
 
-      ElMessage.success('注册成功！请牢记您的账号')
+      ElMessage.success(`注册成功！您的账号是：${res.account}`)
 
-      // 3秒后跳转到登录页
+      // 1.5秒后跳转到登录页，并将账号作为参数传递
       setTimeout(() => {
-        router.push('/login')
-      }, 3000)
+        router.push({
+          path: '/login',
+          query: { account: res.account }
+        })
+      }, 1500)
     } catch (error) {
       console.error('Register failed:', error)
     } finally {
