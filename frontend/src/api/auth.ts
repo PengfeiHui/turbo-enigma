@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 export interface LoginData {
-  account: string  // 改为账号
+  username: string
   password: string
 }
 
@@ -13,7 +13,6 @@ export interface RegisterData {
 export interface UserResponse {
   id: number
   username: string
-  account: string  // 添加账号字段
   role: string
   created_at: string
 }

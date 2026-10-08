@@ -25,15 +25,15 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    account: str = payload.get("sub")
-    if account is None:
+    username: str = payload.get("sub")
+    if username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="无效的认证凭证",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = db.query(User).filter(User.account == account).first()
+    user = db.query(User).filter(User.username == username).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

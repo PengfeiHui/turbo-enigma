@@ -15,13 +15,12 @@
         label-width="0"
         size="large"
       >
-        <el-form-item prop="account">
+        <el-form-item prop="username">
           <el-input
-            v-model="form.account"
-            placeholder="请输入11位数字账号（管理员输入 admin）"
+            v-model="form.username"
+            placeholder="用户名"
             prefix-icon="User"
             clearable
-            maxlength="11"
           />
         </el-form-item>
 
@@ -56,15 +55,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { login } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
-const route = useRoute()
 const userStore = useUserStore()
 const chatStore = useChatStore()
 
@@ -72,38 +70,18 @@ const formRef = ref<FormInstance>()
 const loading = ref(false)
 
 const form = reactive({
-  account: '',
+  username: '',
   password: ''
 })
 
-// 组件挂载时，检查是否有注册传递过来的账号
-onMounted(() => {
-  if (route.query.account) {
-    form.account = route.query.account as string
-    ElMessage.success('注册成功！账号已自动填充，请输入密码登录')
-  }
-})
-
 const rules: FormRules = {
-  account: [
-    { required: true, message: '请输入账号', trigger: 'blur' },
-    {
-      validator: (rule: any, value: string, callback: any) => {
-        // 特殊处理：admin 可以直接登录
-        if (value === 'admin') {
-          callback()
-        } else if (!/^\d{11}$/.test(value)) {
-          callback(new Error('账号必须是11位数字（管理员请输入 admin）'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur'
-    }
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 50, message: '用户名长度为 3-50 个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度为 6-20 个字符', trigger: 'blur' }
+    { min: 6, message: '密码至少 6 位', trigger: 'blur' }
   ]
 }
 
@@ -116,7 +94,7 @@ const handleLogin = async () => {
     loading.value = true
     try {
       const res = await login({
-        account: form.account,
+        username: form.username,
         password: form.password
       })
 

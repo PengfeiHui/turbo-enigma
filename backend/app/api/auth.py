@@ -11,12 +11,7 @@ router = APIRouter(prefix="/api/auth", tags=["认证"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    """用户注册
-
-    - 用户名：2-20个字符，可包含中文、英文、数字、下划线，不能为纯数字
-    - 密码：6-20个字符，必须包含字母和数字
-    - 系统自动生成11位数字账号
-    """
+    """用户注册"""
     try:
         user = auth_service.create_user(
             db=db,
@@ -32,27 +27,22 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(user_data: UserLogin, db: Session = Depends(get_db)):
-    """用户登录
-
-    使用11位数字账号和密码登录
-    """
-    user, error = auth_service.authenticate_user(
-        db=db,
-        account=user_data.account,
-        password=user_data.password
-    )
-
-    if error == "account_not_found":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="账号不存在"
-        )
-    elif error == "wrong_password":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="密码错误"
-        )
+async def login(credentials: UserLogin, db: Session = Depends(get_db)):
+    """用户登录"""
+    user, error_message = auth_service.authenticate_user(db, credentials.username, credentials.password)
+    if not user:
+        if error_message == "user_not_found":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="该用户尚未注册，请先注册",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        else:  # wrong_password
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="密码错误",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     token = auth_service.generate_token(user)
     return TokenResponse(
@@ -74,23 +64,17 @@ async def change_password(
     db: Session = Depends(get_db)
 ):
     """修改密码"""
-    try:
-        success = auth_service.change_password(
-            db=db,
-            user=current_user,
-            old_password=request.old_password,
-            new_password=request.new_password
-        )
+    success = auth_service.change_password(
+        db=db,
+        user=current_user,
+        old_password=request.old_password,
+        new_password=request.new_password
+    )
 
-        if not success:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="原密码错误"
-            )
-
-        return {"message": "密码修改成功"}
-    except ValueError as e:
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="原密码错误"
         )
+
+    return {"message": "密码修改成功"}
