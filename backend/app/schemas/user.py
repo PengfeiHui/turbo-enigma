@@ -28,7 +28,11 @@ class UserLogin(BaseModel):
 
     @validator('account')
     def validate_account(cls, v):
-        """验证账号格式"""
+        """验证账号格式（允许 admin）"""
+        # 特殊处理：admin 可以直接登录
+        if v == 'admin':
+            return v
+        # 普通账号必须是11位数字
         if not v.isdigit() or len(v) != 11:
             raise ValueError('账号必须是11位数字')
         return v
