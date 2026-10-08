@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, chat, conversation, knowledge_base
+from app.api import auth, chat, conversation, knowledge_base, health
 from app.database import Base, engine
 from app.config import settings
 
@@ -23,6 +23,7 @@ app.add_middleware(
 )
 
 # 注册路由
+app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(conversation.router)
@@ -36,11 +37,6 @@ async def root():
         "version": settings.APP_VERSION,
         "docs": "/docs"
     }
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
 
 
 if __name__ == "__main__":
