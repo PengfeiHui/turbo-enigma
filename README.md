@@ -127,9 +127,16 @@ npm run dev
 
 ## 📖 文档
 
-- [快速部署指南](QUICK_DEPLOY.md) - 云服务器部署步骤
-- [完整部署文档](DEPLOYMENT.md) - 详细的部署说明
-- [API 文档](http://localhost:8000/docs) - FastAPI 自动生成的 API 文档
+- [📁 目录导航](DIRECTORY.md) - 快速找到你需要的文档
+- [🚀 快速部署指南](docs/deployment/QUICK_DEPLOY.md) - 云服务器部署步骤
+- [📋 完整部署文档](docs/deployment/DEPLOYMENT.md) - 详细的部署说明
+- [🐳 Docker 使用指南](docs/deployment/DOCKER_GUIDE.md) - Docker 命令和故障排查
+- [💻 Windows 启动指南](docs/deployment/WINDOWS_START_GUIDE.md) - Windows 本地开发
+- [🧪 测试指南](docs/guides/TEST_GUIDE.md) - 功能测试步骤
+- [💡 改进建议](docs/guides/IMPROVEMENT_SUGGESTIONS.md) - 项目改进计划
+- [📊 进度跟踪](docs/guides/PROGRESS.md) - 开发进度
+- [📝 改进总结](docs/guides/SUMMARY.md) - 已完成的改进
+- [📖 API 文档](http://localhost:8000/docs) - FastAPI 自动生成的 API 文档
 
 ---
 
@@ -145,6 +152,7 @@ longChain_RAG/
 │   │   ├── services/      # 业务逻辑
 │   │   └── utils/         # 工具函数
 │   ├── alembic/           # 数据库迁移
+│   ├── logs/              # 日志文件
 │   ├── uploads/           # 上传文件存储
 │   └── chroma_db/         # 向量数据库
 ├── frontend/              # 前端代码
@@ -152,10 +160,27 @@ longChain_RAG/
 │   │   ├── views/        # 页面组件
 │   │   ├── stores/       # 状态管理
 │   │   ├── api/          # API 调用
+│   │   ├── components/   # 公共组件
 │   │   └── utils/        # 工具函数
 │   └── public/           # 静态资源
-├── docker-compose.yml    # Docker 编排
-├── deploy.sh             # 一键部署脚本
+├── docs/                  # 项目文档
+│   ├── deployment/       # 部署相关文档
+│   │   ├── DEPLOYMENT.md
+│   │   ├── QUICK_DEPLOY.md
+│   │   ├── DOCKER_GUIDE.md
+│   │   └── WINDOWS_START_GUIDE.md
+│   └── guides/           # 开发指南
+│       ├── IMPROVEMENT_SUGGESTIONS.md
+│       ├── PROGRESS.md
+│       ├── TEST_GUIDE.md
+│       └── SUMMARY.md
+├── scripts/              # 脚本文件
+│   ├── deploy.sh        # 一键部署脚本（Linux）
+│   ├── start-dev.bat    # 开发环境启动（Windows）
+│   ├── start-backend.bat
+│   └── start-frontend.bat
+├── docker-compose.yml    # Docker 编排配置
+├── .env.example          # 环境变量模板
 └── README.md             # 项目说明
 ```
 

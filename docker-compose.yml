@@ -20,6 +20,22 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: longchain-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # 后端 API
   backend:
     build:
@@ -29,6 +45,10 @@ services:
     environment:
       # 数据库配置
       DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-postgres123}@db:5432/longchain_rag
+
+      # Redis 配置
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
 
       # API Keys
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
@@ -57,6 +77,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
@@ -78,6 +100,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
