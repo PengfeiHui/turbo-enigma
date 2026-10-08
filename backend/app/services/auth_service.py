@@ -11,13 +11,20 @@ class AuthService:
     def authenticate_user(db: Session, account: str, password: str) -> tuple[User | None, str]:
         """验证用户登录（使用账号登录）
 
+        特殊处理：admin 可以直接作为账号登录
+
         Returns:
             tuple: (user, error_message)
             - 成功: (User对象, "")
             - 账号不存在: (None, "account_not_found")
             - 密码错误: (None, "wrong_password")
         """
-        user = db.query(User).filter(User.account == account).first()
+        # 特殊处理：如果账号是 "admin"，则查找 username 为 admin 的用户
+        if account == "admin":
+            user = db.query(User).filter(User.username == "admin").first()
+        else:
+            user = db.query(User).filter(User.account == account).first()
+
         if not user:
             return None, "account_not_found"
         if not verify_password(password, user.password_hash):

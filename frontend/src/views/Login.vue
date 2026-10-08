@@ -18,7 +18,7 @@
         <el-form-item prop="account">
           <el-input
             v-model="form.account"
-            placeholder="请输入11位数字账号"
+            placeholder="请输入11位数字账号（管理员输入 admin）"
             prefix-icon="User"
             clearable
             maxlength="11"
@@ -78,7 +78,19 @@ const form = reactive({
 const rules: FormRules = {
   account: [
     { required: true, message: '请输入账号', trigger: 'blur' },
-    { pattern: /^\d{11}$/, message: '账号必须是11位数字', trigger: 'blur' }
+    {
+      validator: (rule: any, value: string, callback: any) => {
+        // 特殊处理：admin 可以直接登录
+        if (value === 'admin') {
+          callback()
+        } else if (!/^\d{11}$/.test(value)) {
+          callback(new Error('账号必须是11位数字（管理员请输入 admin）'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
