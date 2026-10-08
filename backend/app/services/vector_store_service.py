@@ -5,6 +5,7 @@ from langchain.vectorstores import Chroma
 from langchain.schema import Document
 from app.config import settings
 from app.services.embedding_service import embedding_service
+from app.utils.logger import logger
 
 
 class VectorStoreService:
@@ -71,11 +72,11 @@ class VectorStoreService:
         # 尝试从缓存获取
         cached_result = self._get_from_cache(cache_key)
         if cached_result is not None:
-            print(f"✓ 缓存命中: {query[:30]}...")
+            logger.info(f"✓ 缓存命中: {query[:30]}...")
             return cached_result
 
         # 缓存未命中，执行查询
-        print(f"⚡ 执行查询: {query[:30]}...")
+        logger.info(f"⚡ 执行向量查询: {query[:30]}...")
         results = await self.vectorstore.asimilarity_search_with_score(query, k=k)
 
         # 保存到缓存
@@ -100,7 +101,7 @@ class VectorStoreService:
             self.clear_cache()
 
         except Exception as e:
-            print(f"删除向量失败: {str(e)}")
+            logger.error(f"删除向量失败: {str(e)}")
             # 即使向量删除失败，也不应该阻止文档删除
             pass
 
